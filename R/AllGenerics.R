@@ -215,7 +215,7 @@ setMethod("cellCellDecomp", signature(sce="SingleCellExperiment"),
 setGeneric("cellCellReport", function(sce, reducedDimNames,
     out.dir=tempdir(), html.open=FALSE,
     title="The result of scTensor",
-    author="The person who runs this script", thr=40, top="full", p=0.05, upper=100){
+    author="The person who runs this script", thr=40, top="full", p=0.05, upper=30){
     standardGeneric("cellCellReport")})
 setMethod("cellCellReport", signature(sce="SingleCellExperiment"),
     function(sce, reducedDimNames, out.dir, html.open, title, author,
@@ -225,7 +225,7 @@ setMethod("cellCellReport", signature(sce="SingleCellExperiment"),
 .cellCellReport <- function(reducedDimNames,
     out.dir=tempdir(), html.open=FALSE,
     title="The result of scTensor",
-    author="The person who runs this script", thr=40, top="full", p=0.05, upper=100, ...){
+    author="The person who runs this script", thr=40, top="full", p=0.05, upper=30, ...){
     # Import from sce object
     sce <- list(...)[[1]]
     # algorithm-check
@@ -522,7 +522,7 @@ convertToNCBIGeneID <- function(input, rowID, LefttoRight){
     position.input <- unlist(lapply(seq_along(targetGeneID), function(x){
         target <- which(rowID == names(targetGeneID)[x])
         if(length(target) != 1){
-            targetID <- target[which(score[target] == max(score[target]))]
+            targetID <- target[which(score[target] == max(score[target]))[1]]
         }else{
             targetID <- target
         }
@@ -535,7 +535,8 @@ convertToNCBIGeneID <- function(input, rowID, LefttoRight){
     dif <- nr - nrow(input)
     if(dif > 0){
         message(paste0(dif, " of genes are removed from input matrix (",
-            nr, "*", nc, ")"))
+            nr, "*", nc, "),\n",
+            "and only ", nrow(input), " of genes are kept."))
     }
     input
 }
