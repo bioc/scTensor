@@ -78,7 +78,9 @@ The result is saved as HTML report which contains with multiple files.
 	cellCellReport(sce, reducedDimNames="TSNE",
 	    title="Cell-cell interaction within Germline_Male, GSE86146",
 	    author="Koki Tsuyuzaki", thr=20, html.open=TRUE)
-	try(dev.off())
+	if(.Device == "quartz"){
+		dev.off()
+	}
     }
 }
 
