@@ -11,7 +11,7 @@
 
 
 
-<meta name="date" content="2019-10-25" />
+<meta name="date" content="2019-11-27" />
 
 <title>How to perform CCI simulation by cellCellSimulate function</title>
 
@@ -622,9 +622,9 @@ summary {
 <p class="author-name">Koki Tsuyuzaki<span class="affil-mark">1</span>, Manabu Ishii<span class="affil-mark">1</span> and Itoshi Nikaido<span class="affil-mark">1*</span></p>
 <p class="author-affiliation"><span class="affil-mark">1</span>Laboratory for Bioinformatics Research, RIKEN Center for Biosystems Dynamics Reseach</p>
 <p class="author-email"><span class="affil-mark">*</span><a href="mailto:k.t.the-answer@hotmail.co.jp">k.t.the-answer@hotmail.co.jp</a></p>
-<h4 class="date">25 October 2019</h4>
+<h4 class="date">27 November 2019</h4>
 <h4 class="package">Package</h4>
-<p>scTensor 1.2.0</p>
+<p>scTensor 1.2.1</p>
 
 </div>
 
@@ -777,7 +777,7 @@ three cell types are generated.</p>
 <h1>Session information</h1>
 <pre><code>## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.6
+## Running under: macOS Catalina 10.15.1
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
@@ -790,23 +790,23 @@ three cell types are generated.</p>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] scTensor_1.2.0   BiocStyle_2.12.0
+## [1] scTensor_1.2.1   BiocStyle_2.12.0
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] rappdirs_0.3.1                rtracklayer_1.44.4           
 ##   [3] AnnotationForge_1.26.0        tidyr_1.0.0                  
 ##   [5] ggplot2_3.2.1                 acepack_1.4.1                
-##   [7] bit64_0.9-7                   knitr_1.25                   
+##   [7] bit64_0.9-7                   knitr_1.26                   
 ##   [9] DelayedArray_0.10.0           data.table_1.12.6            
 ##  [11] rpart_4.1-15                  RCurl_1.95-4.12              
 ##  [13] AnnotationFilter_1.8.0        BiocGenerics_0.30.0          
 ##  [15] GenomicFeatures_1.36.4        cowplot_1.0.0                
 ##  [17] RSQLite_2.1.2                 europepmc_0.3                
 ##  [19] bit_1.1-14                    enrichplot_1.4.0             
-##  [21] webshot_0.5.1                 xml2_1.2.2                   
+##  [21] webshot_0.5.2                 xml2_1.2.2                   
 ##  [23] httpuv_1.5.2                  SummarizedExperiment_1.14.1  
 ##  [25] assertthat_0.2.1              viridis_0.5.1                
-##  [27] xfun_0.10                     hms_0.5.1                    
+##  [27] xfun_0.11                     hms_0.5.2                    
 ##  [29] evaluate_0.14                 promises_1.1.0               
 ##  [31] TSP_1.1-7                     progress_1.2.2               
 ##  [33] caTools_1.17.1.2              dendextend_1.12.0            
@@ -815,7 +815,7 @@ three cell types are generated.</p>
 ##  [39] htmlwidgets_1.5.1             stats4_3.6.1                 
 ##  [41] MeSH.db_1.12.0                purrr_0.3.3                  
 ##  [43] dplyr_0.8.3                   backports_1.1.5              
-##  [45] bookdown_0.14                 annotate_1.62.0              
+##  [45] bookdown_0.16                 annotate_1.62.0              
 ##  [47] biomaRt_2.40.5                vctrs_0.2.0                  
 ##  [49] SingleCellExperiment_1.6.0    Biobase_2.44.0               
 ##  [51] ensembldb_2.8.1               abind_1.4-5                  
@@ -829,7 +829,7 @@ three cell types are generated.</p>
 ##  [67] genefilter_1.66.0             pkgconfig_2.0.3              
 ##  [69] tweenr_1.0.1                  GenomeInfoDb_1.20.0          
 ##  [71] ProtGenerics_1.16.0           seriation_1.2-8              
-##  [73] nnet_7.3-12                   rlang_0.4.0                  
+##  [73] nnet_7.3-12                   rlang_0.4.2                  
 ##  [75] lifecycle_0.1.0               meshr_1.20.0                 
 ##  [77] MeSHDbi_1.20.0                registry_0.5-1               
 ##  [79] MeSH.PCR.db_1.12.0            BiocFileCache_1.8.0          
@@ -841,12 +841,12 @@ three cell types are generated.</p>
 ##  [91] ggridges_0.5.1                viridisLite_0.3.0            
 ##  [93] MeSH.AOR.db_1.12.0            bitops_1.0-6                 
 ##  [95] visNetwork_2.0.8              KernSmooth_2.23-16           
-##  [97] spam_2.3-0                    MeSH.Bsu.168.eg.db_1.12.0    
+##  [97] spam_2.4-0                    MeSH.Bsu.168.eg.db_1.12.0    
 ##  [99] Biostrings_2.52.0             blob_1.2.0                   
 ## [101] stringr_1.4.0                 qvalue_2.16.0                
-## [103] nnTensor_1.0.1                gridGraphics_0.4-1           
+## [103] nnTensor_1.0.2                gridGraphics_0.4-1           
 ## [105] S4Vectors_0.22.1              reactome.db_1.68.0           
-## [107] scales_1.0.0                  graphite_1.30.0              
+## [107] scales_1.1.0                  graphite_1.30.0              
 ## [109] memoise_1.1.0                 GSEABase_1.46.0              
 ## [111] magrittr_1.5                  plyr_1.8.4                   
 ## [113] gplots_3.0.1.1                gdata_2.18.0                 
@@ -864,23 +864,23 @@ three cell types are generated.</p>
 ## [137] parallel_3.6.1                rstudioapi_0.10              
 ## [139] foreach_1.4.7                 foreign_0.8-72               
 ## [141] tagcloud_0.6                  outliers_0.14                
-## [143] gridExtra_2.3                 farver_1.1.0                 
-## [145] ggraph_2.0.0                  digest_0.6.21                
-## [147] rvcheck_0.1.5                 BiocManager_1.30.8           
-## [149] shiny_1.4.0                   Rcpp_1.0.2                   
+## [143] gridExtra_2.3                 farver_2.0.1                 
+## [145] ggraph_2.0.0                  digest_0.6.23                
+## [147] rvcheck_0.1.6                 BiocManager_1.30.10          
+## [149] shiny_1.4.0                   Rcpp_1.0.3                   
 ## [151] GenomicRanges_1.36.1          later_1.0.0                  
 ## [153] org.Hs.eg.db_3.8.2            httr_1.4.1                   
 ## [155] cummeRbund_2.26.0             AnnotationDbi_1.46.1         
 ## [157] biovizBase_1.32.0             colorspace_1.4-1             
 ## [159] XML_3.98-1.20                 IRanges_2.18.3               
-## [161] splines_3.6.1                 fields_9.9                   
+## [161] splines_3.6.1                 fields_10.0                  
 ## [163] RBGL_1.60.0                   graphlayouts_0.5.0           
-## [165] ggplotify_0.0.4               plotly_4.9.0                 
+## [165] ggplotify_0.0.4               plotly_4.9.1                 
 ## [167] xtable_1.8-4                  jsonlite_1.6                 
 ## [169] heatmaply_0.16.0              tidygraph_1.1.2              
 ## [171] UpSetR_1.4.0                  zeallot_0.1.0                
-## [173] R6_2.4.0                      MeSH.Hsa.eg.db_1.12.0        
-## [175] Hmisc_4.2-0                   pillar_1.4.2                 
+## [173] R6_2.4.1                      MeSH.Hsa.eg.db_1.12.0        
+## [175] Hmisc_4.3-0                   pillar_1.4.2                 
 ## [177] htmltools_0.4.0               mime_0.7                     
 ## [179] glue_1.3.1                    fastmap_1.0.1                
 ## [181] BiocParallel_1.18.1           interactiveDisplayBase_1.22.0
@@ -889,7 +889,7 @@ three cell types are generated.</p>
 ## [187] tibble_2.1.3                  curl_4.2                     
 ## [189] gtools_3.8.1                  ReactomePA_1.28.0            
 ## [191] misc3d_0.8-4                  GO.db_3.8.2                  
-## [193] survival_2.44-1.1             rmarkdown_1.16               
+## [193] survival_3.1-7                rmarkdown_1.17               
 ## [195] munsell_0.5.0                 DO.db_2.9                    
 ## [197] GenomeInfoDbData_1.2.1        plot3D_1.1.1                 
 ## [199] iterators_1.0.12              reshape2_1.4.3               
