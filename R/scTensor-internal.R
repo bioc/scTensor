@@ -1034,6 +1034,7 @@
             l, r, num.perm, celltypes, mergeas, outerfunc)
         pval <- abind(pval, tmp)
     }
+    pval[which(is.nan(pval))] <- 1
     dimnames(pval) <- list(unique(names(celltypes)),
         unique(names(celltypes)), Pair.name)
     tnsr_cc <- modeSum(tnsr, m=3, drop=TRUE)@data
@@ -1061,6 +1062,7 @@
                 paste(LR$GENEID_L[i], LR$GENEID_R[i], sep="_"))
         }
     }
+    tnsr[which(is.nan(tnsr))] <- 0
     tnsr <- sqrt(tnsr) / (mean(rbind(L, R)) + sqrt(tnsr))
     list(tnsr=tnsr, pairname=Pair.name)
 }
@@ -1115,6 +1117,7 @@
             LR, l, r, num.perm, celltypes, mergeas, outerfunc)
         pval <- abind(pval, tmp)
     }
+    pval[which(is.nan(pval))] <- 1
     dimnames(pval) <- list(unique(names(celltypes)),
         unique(names(celltypes)), Pair.name)
     tnsr_cc <- modeSum(tnsr, m=3, drop=TRUE)@data
@@ -1149,6 +1152,7 @@
                 paste(LR$GENEID_L[i], LR$GENEID_R[i], sep="_"))
         }
     }
+    tnsr[which(is.nan(tnsr))] <- 0
     list(tnsr=tnsr, pairname=Pair.name)
 }
 
@@ -1192,6 +1196,7 @@
             l, r, num.perm, celltypes, mergeas, outerfunc)
         pval <- abind(pval, tmp)
     }
+    pval[which(is.nan(pval))] <- 1
     dimnames(pval) <- list(unique(names(celltypes)),
         unique(names(celltypes)), Pair.name)
     tnsr_cc <- modeSum(tnsr, m=3, drop=TRUE)@data
