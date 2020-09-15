@@ -1,7 +1,7 @@
 Package: scTensor
 Type: Package
 Title: Detection of cell-cell interaction from single-cell RNA-seq dataset by tensor decomposition
-Version: 1.5.3
+Version: 1.99.0
 Authors@R: c(person("Koki", "Tsuyuzaki", role = c("aut", "cre"),
                 email = "k.t.the-answer@hotmail.co.jp"),
             person("Kozo", "Nishida", role = "aut",
@@ -45,11 +45,10 @@ Imports: methods,
     ggplot2
 Suggests: testthat,
     LRBase.Hsa.eg.db,
-    MeSH.Hsa.eg.db,
     LRBase.Mmu.eg.db,
-    MeSH.Mmu.eg.db,
     LRBaseDbi,
     Seurat,
+    scTGIF,
     Homo.sapiens
 Description: The algorithm is based on the non-negative tucker decomposition (NTD2) of nnTensor.
 License: Artistic-2.0
