@@ -1,11 +1,11 @@
 #
 # cellCellSetting
 #
-setGeneric("cellCellSetting", function(sce, lrbase, label,  lr.evidence="all", color=NULL){
+setGeneric("cellCellSetting", function(sce, lrbase, label, lr.evidence="known", color=NULL){
     standardGeneric("cellCellSetting")})
 
 setMethod("cellCellSetting", signature(sce="SingleCellExperiment"),
-    function(sce, lrbase, label, lr.evidence="all", color=NULL){
+    function(sce, lrbase, label, lr.evidence="known", color=NULL){
         userobjects <- deparse(substitute(sce))
         .cellCellSetting(userobjects, lrbase, label, lr.evidence, color, sce)})
 
@@ -118,7 +118,7 @@ setMethod("cellCellRanks",
     # Tensor is generated
     tnsr <- .cellCellDecomp.Third(input, LR, celltypes, ranks=c(1,1,1),
         rank=1, centering, mergeas, outerfunc, comb, num.sampling,
-        num.perm, decomp=FALSE, thr1=log2(5), thr2=25, verbose)$cellcelllrpairpattern
+        num.perm, decomp=FALSE, thr1=log2(5), thr2=25, thr3=0.95, verbose)$cellcelllrpairpattern
 
     # Limit
     l1 <- min(dim(tnsr)[1], dim(tnsr)[2]*dim(tnsr)[3])
@@ -169,10 +169,10 @@ setMethod("cellCellRanks",
 # cellCellDecomp
 #
 setGeneric("cellCellDecomp", function(sce,
-    algorithm=c("ntd2", "ntd", "nmf", "pearson",
+    algorithm=c("ntd2", "ntd", "nmf", "cx", "pearson",
     "spearman", "distance", "pearson.lr", "spearman.lr", "distance.lr",
     "pcomb", "label.permutation", "cabello.aguilar", "halpern"), ranks=c(3,3),
-    rank=3, thr1=log2(5), thr2=25, verbose=FALSE,
+    rank=3, thr1=log2(5), thr2=25, thr3=0.95, L1_A=0, L2_A=0, verbose=FALSE,
     centering=TRUE, mergeas=c("mean", "sum"), outerfunc=c("*", "+"),
     comb=c("random", "all"), num.sampling=100, num.perm=1000,
     assayNames="counts", decomp=TRUE){
@@ -180,11 +180,12 @@ setGeneric("cellCellDecomp", function(sce,
 
 setMethod("cellCellDecomp", signature(sce="SingleCellExperiment"),
     function(sce,
-        algorithm=c("ntd2", "ntd", "nmf", "pearson", "spearman", "distance",
-        "pearson.lr", "spearman.lr", "distance.lr", "pcomb",
+        algorithm=c("ntd2", "ntd", "nmf", "cx", "pearson", "spearman",
+        "distance", "pearson.lr", "spearman.lr", "distance.lr", "pcomb",
         "label.permutation", "cabello.aguilar", "halpern"), ranks=c(3,3),
-        rank=3, thr1=log2(5), thr2=25, verbose=FALSE, centering=TRUE,
-        mergeas=c("mean", "sum"), outerfunc=c("*", "+"), comb=c("random", "all"),
+        rank=3, thr1=log2(5), thr2=25, thr3=0.95, L1_A=0, L2_A=0,
+        verbose=FALSE, centering=TRUE, mergeas=c("mean", "sum"),
+        outerfunc=c("*", "+"), comb=c("random", "all"),
         num.sampling=100, num.perm=1000, assayNames="counts", decomp=TRUE){
         # Argument Check
         algorithm = match.arg(algorithm)
@@ -193,13 +194,14 @@ setMethod("cellCellDecomp", signature(sce="SingleCellExperiment"),
         comb = match.arg(comb)
 
         userobjects <- deparse(substitute(sce))
-        .cellCellDecomp(userobjects, algorithm, ranks, rank, thr1, thr2,
-            verbose, centering, mergeas, outerfunc, comb, num.sampling,
+        .cellCellDecomp(userobjects, algorithm, ranks, rank,
+            thr1, thr2, thr3, L1_A, L2_A, verbose, centering, mergeas,
+            outerfunc, comb, num.sampling,
             num.perm, assayNames, decomp, sce)})
 
-.cellCellDecomp <- function(userobjects, algorithm, ranks, rank, thr1,
-    thr2, verbose, centering, mergeas, outerfunc, comb, num.sampling,
-    num.perm, assayNames, decomp,  ...){
+.cellCellDecomp <- function(userobjects, algorithm, ranks, rank,
+    thr1, thr2, thr3, L1_A, L2_A, verbose, centering, mergeas, outerfunc,
+    comb, num.sampling, num.perm, assayNames, decomp, ...){
     # Import from sce object
     sce <- list(...)[[1]]
     # Import expression matrix
@@ -233,11 +235,11 @@ setMethod("cellCellDecomp", signature(sce="SingleCellExperiment"),
     }else{
         res.sctensor <- f(input, LR, celltypes, ranks, rank, centering,
             mergeas, outerfunc, comb, num.sampling, num.perm, decomp,
-            thr1, thr2, verbose)
+            thr1, thr2, thr3, L1_A, L2_A, verbose)
     }
 
     # Data size
-    if (algorithm == "ntd" || algorithm == "ntd2"){
+    if (algorithm %in% c("cx", "ntd2", "ntd")){
         datasize <- c(ncol(res.sctensor[[2]]), ncol(res.sctensor[[3]]),
             ncol(res.sctensor[[4]]))
         recerror <- res.sctensor$recerror
@@ -288,10 +290,10 @@ setMethod("cellCellReport", signature(sce="SingleCellExperiment"),
     # Import from sce object
     sce <- list(...)[[1]]
     # algorithm-check
-    if(metadata(sce)$algorithm != "ntd" && metadata(sce)$algorithm != "ntd2"){
+    if(metadata(sce)$algorithm %ni% c("cx", "ntd2", "ntd")){
         stop(paste0("cellCellReport can be performed by the result of",
             " cellCellDecomp in which the algorithm is ",
-            "specified as 'ntd' or 'ntd2' for now."))
+            "specified as 'cx', 'ntd2' or 'ntd' for now."))
     }
     # The Directory for saving the analytical result
     dir.create(paste0(out.dir, "/figures"),
@@ -309,7 +311,7 @@ setMethod("cellCellReport", signature(sce="SingleCellExperiment"),
             to = paste0(out.dir, "/Workflow.png"),
             overwrite = TRUE)
     }
-    if(metadata(sce)$algorithm == "ntd2"){
+    if(metadata(sce)$algorithm %in% c("cx", "ntd2")){
         file.copy(
             from = system.file("extdata", "Workflow_2.png", package = "scTensor"),
             to = paste0(out.dir, "/Workflow_2.png"),
@@ -322,7 +324,7 @@ setMethod("cellCellReport", signature(sce="SingleCellExperiment"),
             goenrich, meshenrich, reactomeenrich,
             doenrich, ncgenrich, dgnenrich, nbins)
     }
-    if(metadata(sce)$algorithm == "ntd2"){
+    if(metadata(sce)$algorithm %in% c("cx", "ntd2")){
         .cellCellReport.Third_2(sce, thr, upper, assayNames, reducedDimNames, out.dir, author, title, p, top,
             goenrich, meshenrich, reactomeenrich,
             doenrich, ncgenrich, dgnenrich, nbins)

@@ -112,7 +112,6 @@
                 LR$GENEID_R[i], sep="_"))
         }
     }
-    tnsr <- .frontal.normalization(tnsr)
     dimnames(tnsr) <- list(unique(names(celltypes)),
         unique(names(celltypes)), Pair.name)
     list(tnsr=tnsr, pairname=Pair.name)
@@ -142,14 +141,69 @@
                 LR$GENEID_R[i], sep="_"))
         }
     }
-    tnsr <- .frontal.normalization(tnsr)
     dimnames(tnsr) <- list(unique(names(celltypes)),
         unique(names(celltypes)), Pair.name)
     list(tnsr=tnsr, pairname=Pair.name)
 }
 
-.cellCellDecomp.Third_2 <- function(input, LR, celltypes, ranks, rank, centering,
-        mergeas, outerfunc, comb, num.sampling, num.perm, decomp, thr1, thr2, verbose){
+.cellCellDecomp.Third_3 <- function(input, LR, celltypes, ranks, rank,
+    centering, mergeas, outerfunc, comb, num.sampling, num.perm, decomp,
+    thr1, thr2, thr3, L1_A, L2_A, verbose){
+    if(centering){
+        fout <- .celltypemergedtensor(input, LR, celltypes, mergeas, outerfunc)
+    }else{
+        if(comb == "random"){
+            fout <- .fastPossibleCombination(input, LR, celltypes,
+                num.sampling, outerfunc)
+        }else if(comb == "all"){
+            fout <- .slowPossibleCombination(input, LR, celltypes, outerfunc)
+        }
+    }
+    tnsr <- as.tensor(fout$tnsr)
+    Pair.name <- fout$pairname
+    if(decomp){
+        message(paste0(paste(dim(tnsr), collapse=" * "), " Tensor is created"))
+        out <- try(MultiCX(Y=tnsr, modes=1:2, thr=thr3, c.method="random"))
+        if(is(out)[1] == "try-error"){
+            out <- MultiCX(Y=tnsr, modes=1:2, thr=thr3, c.method="random")
+        }
+        A1 <- t(out$C[[1]]$C)
+        A2 <- t(out$C[[2]]$C)
+        rownames(A1) <- paste0("Dim", seq_len(nrow(A1)))
+        colnames(A1) <- unique(names(celltypes))
+        rownames(A2) <- paste0("Dim", seq_len(nrow(A2)))
+        colnames(A2) <- unique(names(celltypes))
+        dimnames(out$U@data) <- list(
+            Lpattern=paste0("Dim", seq_len(nrow(A1))),
+            Rpattern=paste0("Dim", seq_len(nrow(A2))),
+            LR=Pair.name
+        )
+        if (nrow(A1) * nrow(A2) == 1){
+            core <- t(sum(out$U@data))
+        }else{
+            core <- modeSum(out$U, m=3, drop=TRUE)@data
+            if(nrow(A1) == 1 || nrow(A2) == 1){
+                dim(core) <- c(nrow(A1), nrow(A2))
+            }
+        }
+        index <- .core2table_2(core)
+        if(is.vector(index)){
+            index <- t(index)
+        }
+        return(list(index=index, ligand=A1,
+            receptor=A2, lrpair=out$U,
+            recerror=out$RecError, relchange=out$RelChange))
+    }else{
+        tnsr_cc <- modeSum(tnsr, m=3, drop=TRUE)@data
+        dimnames(tnsr_cc) <- list(unique(names(celltypes)),
+            unique(names(celltypes)))
+        return(list(cellcellpattern=tnsr_cc, cellcelllrpairpattern=tnsr))
+    }
+}
+
+.cellCellDecomp.Third_2 <- function(input, LR, celltypes, ranks, rank,
+    centering, mergeas, outerfunc, comb, num.sampling, num.perm, decomp,
+    thr1, thr2, thr3, L1_A, L2_A, verbose){
     # ranks-check
     max.rank <- length(unique(celltypes))
     if(ranks[1] > max.rank || ranks[2] > max.rank){
@@ -183,10 +237,13 @@
     Pair.name <- fout$pairname
     if(decomp){
         message(paste0(paste(dim(tnsr), collapse=" * "), " Tensor is created"))
-        out <- try(NTD(X=tnsr, rank=ranks, modes=1:2, num.iter=30,
-            verbose=verbose, algorithm="Frobenius"))
+        out <- try(NTD(X=tnsr, L1_A=L1_A, L2_A=L2_A,
+            rank=ranks, modes=1:2, verbose=verbose,
+            algorithm="Frobenius", num.iter=30))
         if(is(out)[1] == "try-error"){
-            out <- NTD(X=tnsr, rank=ranks, modes=1:2, num.iter=30, algorithm="Frobenius")
+            out <- NTD(X=tnsr, L1_A=L1_A, L2_A=L2_A,
+                rank=ranks, modes=1:2, verbose=verbose,
+                algorithm="Frobenius", num.iter=30)
         }
         A1 <- out$A[[1]]
         A2 <- out$A[[2]]
@@ -223,7 +280,8 @@
 }
 
 .cellCellDecomp.Third <- function(input, LR, celltypes, ranks, rank, centering,
-        mergeas, outerfunc, comb, num.sampling, num.perm, decomp, thr1, thr2, verbose){
+        mergeas, outerfunc, comb, num.sampling, num.perm, decomp,
+        thr1, thr2, thr3, L1_A, L2_A, verbose){
     # ranks-check
     max.rank <- length(unique(celltypes))
     if(ranks[1] > max.rank || ranks[2] > max.rank){
@@ -260,10 +318,12 @@
     Pair.name <- fout$pairname
     if(decomp){
         message(paste0(paste(dim(tnsr), collapse=" * "), " Tensor is created"))
-        out <- try(NTD(X=tnsr, rank=ranks, num.iter=30,
+        out <- try(NTD(X=tnsr, L1_A=L1_A, L2_A=L2_A,
+            rank=ranks, num.iter=30,
             verbose=verbose, algorithm="Frobenius"))
         if(is(out)[1] == "try-error"){
-            out <- try(NTD(X=tnsr, rank=ranks, num.iter=30,
+            out <- try(NTD(X=tnsr, L1_A=L1_A, L2_A=L2_A,
+                rank=ranks, num.iter=30,
                 verbose=verbose, algorithm="Frobenius"))
         }
         A1 <- out$A[[1]]
@@ -296,7 +356,7 @@
 
 .cellCellDecomp.Second <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     # ranks-check
     max.rank <- length(unique(celltypes))
     if(rank > max.rank){
@@ -334,7 +394,7 @@
 
 .cellCellDecomp.Pearson <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     out <- .cellType(input, celltypes)
     out <- cor(out, method="pearson")
     out <- as.matrix(out)
@@ -343,7 +403,7 @@
 
 .cellCellDecomp.Spearman <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     out <- .cellType(input, celltypes)
     out <- cor(out, method="spearman")
     out <- as.matrix(out)
@@ -352,7 +412,7 @@
 
 .cellCellDecomp.Distance <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     out <- .cellType(input, celltypes)
     out <- 1 / dist(t(out))
     out <- as.matrix(out)
@@ -362,7 +422,7 @@
 
 .cellCellDecomp.Pearson.LR <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     ct <- .cellType(input, celltypes)
     ct <- .divLR(ct, LR)
     L <- ct[[1]]
@@ -383,7 +443,7 @@
 
 .cellCellDecomp.Spearman.LR <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     ct <- .cellType(input, celltypes)
     ct <- .divLR(ct, LR)
     L <- ct[[1]]
@@ -404,7 +464,7 @@
 
 .cellCellDecomp.Distance.LR <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     ct <- .cellType(input, celltypes)
     ct <- .divLR(ct, LR)
     L <- ct[[1]]
@@ -426,7 +486,7 @@
 
 .cellCellDecomp.PossibleCombination <- function(input, LR, celltypes, ranks,
     rank, centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     if(thr1 <= 0 || thr2 <= 0){
         warning("None of cell-cell interaction will be detected.")
     }
@@ -488,7 +548,6 @@
                 paste(LR$GENEID_L[i], LR$GENEID_R[i], sep="_"))
         }
     }
-    tnsr <- .frontal.normalization(tnsr)
     list(tnsr=tnsr, pairname=Pair.name)
 }
 
@@ -517,7 +576,7 @@
 
 .cellCellDecomp.LabelPerm.LR <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     fout <- .celltypemergedtensor(input, LR, celltypes,
         mergeas, outerfunc)
     tnsr <- as.tensor(fout$tnsr)
@@ -600,7 +659,7 @@
 
 .cellCellDecomp.CabelloAguilar <- function(input, LR, celltypes, ranks,
     rank, centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     fout <- .celltypemergedtensor.ca(input, LR, celltypes,
         mergeas, outerfunc)
     tnsr <- as.tensor(fout$tnsr)
@@ -678,7 +737,7 @@
 
 .cellCellDecomp.Halpern <- function(input, LR, celltypes, ranks, rank,
     centering, mergeas, outerfunc, comb, num.sampling, num.perm,
-    decomp, thr1, thr2, verbose){
+    decomp, thr1, thr2, thr3, L1_A, L2_A, verbose){
     fout <- .celltypemergedtensor.hl(input, LR, celltypes,
         mergeas, outerfunc)
     fout$tnsr[which(is.nan(fout$tnsr))] <- 0
@@ -704,11 +763,13 @@
 }
 
 .flist <- list(
-    # 3-Order, 2-mode decomposition = NTD2
+    # 3-Order, 2-mode decomposition : MultilinearCX
+    "cx" = .cellCellDecomp.Third_3,
+    # 3-Order, 2-mode decomposition : NTD2
     "ntd2" = .cellCellDecomp.Third_2,
-    # 3-Order = NTD
+    # 3-Order : NTD
     "ntd" = .cellCellDecomp.Third,
-    # 2-Order = NMF
+    # 2-Order : NMF
     "nmf" = .cellCellDecomp.Second,
     # Other method (Possible Combination)
     "pcomb" = .cellCellDecomp.PossibleCombination,
