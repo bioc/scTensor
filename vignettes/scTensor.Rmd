@@ -64,7 +64,7 @@ Please see the evidence code of lrbase-workflow^[https://github.com/rikenbit/lrb
 First of all, we download the data of LRBase from AnnotationHub.
 `AnnotationHub::AnnotationHub` retrieve the metadata of all the data stored in cloud server.
 
-```{r AHub1, echo=FALSE}
+```{r AHub1, echo=TRUE}
 library("AnnotationHub")
 ah <- AnnotationHub()
 mcols(ah)
@@ -72,7 +72,7 @@ mcols(ah)
 
 Specifying some keywords in `query()`, we can find LRBase data in AnnotationHub.
 
-```{r AHub2, echo=FALSE}
+```{r AHub2, echo=TRUE}
 dbfile <- query(ah, c("LRBaseDb", "Homo sapiens", "v002"))[[1]]
 ```
 
@@ -80,7 +80,7 @@ AnnotationHub also keeps old data as an archive, so please make sure you have th
 
 Then, we can convert `dbfile` into LRBase object by using `LRBaseDbi`.
 
-```{r AHub3, echo=FALSE}
+```{r AHub3, echo=TRUE}
 library("LRBaseDbi")
 LRBase.Hsa.eg.db <- LRBaseDbi::LRBaseDb(dbfile)
 ```
@@ -143,7 +143,7 @@ We assume that user has a scRNA-Seq data matrix containing expression count data
 
 To improve the interpretability of the following HTML report, we highly recommend that user specifies the two-dimensional data of input data (e.g. PCA, t-SNE, or UMAP). Such information is easily specified by `reducedDims` function of `r Biocpkg("SingleCellExperiment")` package and is saved to reducedDims slot of `SingleCellExperiment` object (Figure \@ref(fig:cellCellSetting)).
 
-```{r SCE1, echo=FALSE}
+```{r SCE1, echo=TRUE}
 suppressPackageStartupMessages(library("scTensor"))
 suppressPackageStartupMessages(library("SingleCellExperiment"))
 ```
