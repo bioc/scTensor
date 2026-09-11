@@ -1,3 +1,11 @@
+VERSION 2.23.2
+------------------------
+   o DGN enrichment (enrichDGN) is no longer available because enrichDGN()
+     was removed from DOSE (>= 4.7.1) due to a DisGeNET licensing change.
+     The dgnenrich parameter default is changed from TRUE to FALSE.
+     Setting dgnenrich=TRUE now issues a warning and returns empty results.
+     The DGN element is still present in the output for backward compatibility.
+
 VERSION 2.18.1
 ------------------------
    o A vignette modified.
