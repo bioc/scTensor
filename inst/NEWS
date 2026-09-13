@@ -1,3 +1,10 @@
+VERSION 2.23.3
+------------------------
+   o Fixed empty \item label in newCCSParams.Rd (R CMD check WARNING).
+   o Added manual page for BuildSignedCCI (R CMD check WARNING).
+   o Removed unused symTensor from Imports (R CMD check NOTE).
+   o Fixed 'no visible binding' NOTE for m and v in .simulateDropoutCounts.
+
 VERSION 2.23.2
 ------------------------
    o DGN enrichment (enrichDGN) is no longer available because enrichDGN()
